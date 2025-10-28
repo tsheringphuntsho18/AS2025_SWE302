@@ -1,10 +1,10 @@
-# Practical 01 &mdash; React Quiz Application
+# Practical_01 Report: React Quiz Application
 
 ## Overview
 
 This practical focuses on building a simple quiz application using **React**. The goal is to demonstrate fundamental concepts of React such as components, state management, props, and event handling, while also applying basic software testing and quality assurance principles.
 
-**GitHub Repository:** [https://github.com/tsheringphuntsho18/reactquiz](https://github.com/tsheringphuntsho18/reactquiz)
+**Full working code Repository:** [https://github.com/tsheringphuntsho18/reactquiz](https://github.com/tsheringphuntsho18/reactquiz)
 
 ---
 
@@ -17,35 +17,24 @@ This practical focuses on building a simple quiz application using **React**. Th
 
 ---
 
-## Implementation Steps
-
-1. **Project Setup**
-   - Initialized a new React project using `create-react-app`.
-   - Set up the project structure with separate folders for components and assets.
-
-2. **Component Design**
-   - Created reusable components such as `Quiz`, `Question`, `Options`, and `Score`.
-   - Used props to pass data between components.
-
-3. **State Management**
-   - Utilized React's `useState` hook to manage current question, selected answers, and score.
-   - Implemented logic to handle user interactions and update state accordingly.
-
-4. **User Interface**
-   - Designed a clean and intuitive UI for the quiz using CSS.
-   - Added images and assets for better user experience (see [assets/](assets/) folder).
-
-5. **Testing & Debugging**
-   - Performed manual testing to ensure correct functionality.
-   - Debugged issues related to state updates and component rendering.
-
----
-
 ## Screenshots
 
-| Start Screen | Quiz in Progress | Score Report |
-|--------------|------------------|-------------|
-| ![Start](assets/start.png) | ![Quiz](assets/quiz.png) | ![Score](assets/score.png) |
+Start Screen
+![Start](assets/start.png)  
+
+Quiz in Progress
+![Quiz](assets/quiz.png)  
+
+Score Report 
+![Score](assets/score.png) 
+
+Test Pass  
+![test](assets/testpass.png)
+
+Playwright report
+![test](assets/testreport.png)
+
+I didn't test for safari (webkit) since my device is not compatable for it.
 
 ---
 
@@ -54,6 +43,7 @@ This practical focuses on building a simple quiz application using **React**. Th
 - Managing state transitions between questions and handling edge cases (e.g., last question).
 - Ensuring components re-render correctly on state changes.
 - Debugging issues with answer selection and score calculation.
+- Making all the test pass.
 
 ---
 
