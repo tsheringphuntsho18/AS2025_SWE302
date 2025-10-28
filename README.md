@@ -11,17 +11,17 @@ This repository is dedicated to the practical works and related documentation fo
 ```
 AS2025_SWE302/
 ├── practical_01/
-│   ├── src/
+│   ├──assets/
+│   │   └── [images, diagrams, etc.]
 │   ├── README.md
 │   └── ...
 ├── practical_02/
-│   ├── src/
+│   ├──assets/
+│   │   └── [images, diagrams, etc.]
 │   ├── README.md
 │   └── ...
 ├── practical_03/
 │   └── ...
-├── assets/
-│   └── [images, diagrams, etc.]
 └── README.md
 ```
 
