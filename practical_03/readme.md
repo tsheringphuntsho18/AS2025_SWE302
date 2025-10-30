@@ -75,5 +75,5 @@ All partitions and boundaries are covered in a single table-driven test in `ship
    ```
    All tests should pass.
 
-![test](/assets/test1.png)  
-![test](/assets/test2.png)
+![test](./assets/test1.png)  
+![test](./assets/test2.png)
