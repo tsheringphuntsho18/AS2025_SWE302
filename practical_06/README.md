@@ -186,34 +186,33 @@ open $WEBSITE  # macOS
 
 ```
 practical6-example/
-├── docker-compose.yml          # LocalStack configuration
-├── Makefile                    # Convenience commands
-├── README.md                   # This file
+├── docker-compose.yml          
+├── Makefile                    
+├── README.md                   
 │
 ├── init-scripts/
-│   └── 01-setup.sh            # LocalStack initialization script
+│   └── 01-setup.sh            
 │
 ├── scripts/
-│   ├── setup.sh               # Start LocalStack
-│   ├── deploy.sh              # Full deployment automation
-│   ├── status.sh              # Check deployment status
-│   ├── cleanup.sh             # Clean up everything
-│   ├── scan.sh                # Run Trivy security scans
-│   └── compare-security.sh    # Compare secure vs insecure configs
+│   ├── deploy.sh              
+│   ├── status.sh              
+│   ├── cleanup.sh             
+│   ├── scan.sh                
+│   └── compare-security.sh    
 │
 ├── nextjs-app/
-│   ├── app/                   # Next.js application
-│   ├── next.config.js         # Configured for static export
+│   ├── app/                   
+│   ├── next.config.js         
 │   └── package.json
 │
 ├── terraform/
-│   ├── main.tf                # Provider and backend configuration
-│   ├── variables.tf           # Input variables
-│   ├── s3.tf                  # S3 bucket definitions
-│   ├── iam.tf                 # IAM examples (commented out)
-│   └── outputs.tf             # Output values
+│   ├── main.tf                
+│   ├── variables.tf           
+│   ├── s3.tf                  
+│   ├── iam.tf                 
+│   └── outputs.tf             
 │
-└── terraform-insecure/        # Insecure examples for security learning
+└── terraform-insecure/        
     ├── s3-insecure.tf
     ├── iam-insecure.tf
     └── README.md
