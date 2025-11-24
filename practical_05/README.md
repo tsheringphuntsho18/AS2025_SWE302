@@ -1,57 +1,32 @@
-# Practical 5 TestContainers Example
+# Practical_05 Report: Integration Testing with TestContainers for Database Testing
 
-Complete reference implementation for Practical 5 - Integration Testing with TestContainers.
 
 ## Overview
 
-This project demonstrates:
-- Integration testing with TestContainers
-- PostgreSQL database testing
-- Full CRUD operations
-- Advanced queries (pattern matching, counting, date filtering)
-- Transaction testing and isolation
-- Multi-container setup with Redis caching
+This project demonstrates a complete and practical approach to backend testing and data handling. It brings together integration testing using TestContainers and a fully isolated PostgreSQL environment to verify how the application behaves with real databases instead of mocks. The implementation covers full CRUD functionality along with more advanced querying features such as pattern matching, record counting, and filtering by dates. It also includes tests focused on transactional behavior and isolation levels to ensure data consistency. In addition, the setup demonstrates how multiple containers specifically PostgreSQL and Redis can work together, with Redis used to test caching mechanisms in a realistic multi-service environment.
 
 ## Prerequisites
 
 - Go 1.21 or higher
 - Docker Desktop running
-- ~500MB disk space for Docker images
-
-## Quick Start
-
-```bash
-# Clone/navigate to project
-cd practicals/practical5-example
-
-# Download dependencies
-go mod download
-
-# Run all tests
-go test ./... -v
-
-# Run tests with coverage
-go test -cover ./repository
-
-# Run specific test suite
-go test ./repository -run TestGetByID -v
-```
+- 500MB disk space for Docker images
 
 ## Project Structure
 
 ```
-practical5-example/
+practical_05/
 ├── models/
-│   └── user.go                          # User data model
+│   └── user.go                          
 ├── repository/
-│   ├── user_repository.go               # Basic CRUD operations
-│   ├── user_repository_test.go          # Integration tests (Exercises 1-4)
-│   ├── cached_user_repository.go        # Redis caching layer
-│   └── cached_user_repository_test.go   # Multi-container tests (Exercise 5)
+│   ├── user_repository.go               
+│   ├── user_repository_test.go          
+│   ├── cached_user_repository.go        
+│   └── cached_user_repository_test.go   
 ├── migrations/
-│   └── init.sql                         # Database schema
-├── go.mod                               # Dependencies
-└── README.md                            # This file
+│   └── init.sql                         
+├── go.mod 
+├── go.sum                              
+└── README.md                            
 ```
 
 ## Exercises Covered
@@ -131,24 +106,6 @@ Tests maintain isolation through:
 Test Start → Container Starts → Database Initializes → Tests Run → Container Stops
 ```
 
-## Troubleshooting
-
-### "Cannot connect to Docker daemon"
-- Ensure Docker Desktop is running
-- Check: `docker ps`
-
-### "Container startup timeout"
-- Increase timeout in wait strategy
-- Check Docker has enough resources
-
-### "Tests are slow"
-- First run downloads images (one-time cost)
-- Subsequent runs use cached images
-- Consider parallel test execution
-
-### "Port conflicts"
-- TestContainers uses random ports
-- No manual port configuration needed
 
 ## Key Learnings
 
@@ -172,7 +129,3 @@ Test Start → Container Starts → Database Initializes → Tests Run → Conta
 - [PostgreSQL Module](https://golang.testcontainers.org/modules/postgres/)
 - [Redis Module](https://golang.testcontainers.org/modules/redis/)
 - Main Tutorial: `../practical5.md`
-
-## License
-
-Educational use for SWE302 - Software Testing & Quality Assurance
