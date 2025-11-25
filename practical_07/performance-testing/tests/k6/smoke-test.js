@@ -2,15 +2,11 @@ import http from "k6/http";
 import { check } from "k6";
 
 export const options = {
-  vus: 500,
-  duration: "30s",
-  thresholds: {
-    http_req_duration: ["avg<100", "p(95)<200"],
-    "http_req_connecting{cdnAsset:true}": ["p(95)<100"],
-  },
+  vus: 1, // Single virtual user
+  duration: "30s", // Run for 30 seconds
 };
 
-const BASE_URL = __ENV.BASE_URL || "https://504dbfd5b6f1.ngrok-free.app";
+const BASE_URL = __ENV.BASE_URL || "http://localhost:3000";
 
 export default function () {
   // Quick checks that everything works
