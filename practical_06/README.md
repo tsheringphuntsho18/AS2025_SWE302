@@ -54,15 +54,15 @@ awslocal s3 sync nextjs-app/out/ s3://$(cd terraform && terraform output -raw de
 *This screenshot displays the homepage of the deployed Next.js static website, confirming that the deployment to the S3 bucket was successful and the site is accessible via the configured endpoint.*
 
 **2. Trivy Scan Results (Secure Configuration)**
-![Trivy Scan Results Secure](assets/trivy.png)
+![Trivy Scan Results Secure](assets/trivy.png)  
 *This screenshot shows the results of running Trivy on the secure Terraform configuration. It highlights that there are no critical or high vulnerabilities detected, indicating best security practices are in place.*
 
 **3. Trivy Scan Results (Insecure Configuration)**  
-![Trivy Scan Results Insecure](assets/insecure.png)
+![Trivy Scan Results Insecure](assets/insecure.png)  
 *This screenshot presents the Trivy scan output for the intentionally insecure Terraform configuration. It reveals multiple critical and high vulnerabilities, such as lack of encryption and overly permissive IAM policies, which should be addressed.*
 
 **4. Terraform Apply and Security Comparison** 
-![Terraform Apply and Security Comparison](assets/comparing.png)   
+![Terraform Apply and Security Comparison](assets/comparing.png)  
 *This screenshot shows the output of a successful `terraform apply` and a comparison of security scan results between secure and insecure configurations using Trivy. It demonstrates that the secure configuration has no critical or high vulnerabilities, while the insecure configuration does.*
 
 ## Terraform Configuration Highlights
@@ -76,22 +76,16 @@ awslocal s3 sync nextjs-app/out/ s3://$(cd terraform && terraform output -raw de
 ### Scan Secure Configuration
 ```sh
 ./scripts/scan.sh terraform
-# or
-make scan
 ```
 
 ### Scan Insecure Configuration
 ```sh
 ./scripts/scan.sh insecure
-# or
-make scan-insecure
 ```
 
 ### Compare Results
 ```sh
 ./scripts/compare-security.sh
-# or
-make compare-security
 ```
 
 ## Reflection
