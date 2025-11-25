@@ -28,104 +28,90 @@ practical_05/
 ├── go.sum                              
 └── README.md                            
 ```
+## TestContainers Integration
 
-## Exercises Covered
+TestContainers enables running real PostgreSQL and Redis instances in Docker containers for integration testing. Each test suite starts containers, initializes schemas, and ensures clean state and isolation. Containers are automatically cleaned up after tests, making the setup CI/CD friendly and reproducible.
 
-### Exercise 1-2: Basic CRUD (user_repository_test.go)
-- `TestGetByID` - Retrieve user by ID
-- `TestGetByEmail` - Retrieve user by email
-- `TestCreate` - Create new user
-- `TestUpdate` - Update existing user
-- `TestDelete` - Delete user
-- `TestList` - List all users
+**Key Benefits:**
+- Real database testing (no mocks)
+- Automatic setup/teardown
+- Test isolation
+- Production-like environment
 
-### Exercise 3: Advanced Queries (user_repository.go)
-- `FindByNamePattern` - Pattern matching with ILIKE
-- `CountUsers` - Count total users
-- `GetRecentUsers` - Filter by date range
+## Testing Approach
 
-### Exercise 4: Transactions (user_repository.go)
-- `BatchCreate` - Atomic batch operations
-- `TransferUserData` - Complex transactions
-- `TestTransactionRollback` - Verify rollback behavior
-- `TestConcurrentWrites` - Concurrent access
+- **TestMain**: Sets up containers and database connections before tests, and tears them down after.
+- **CRUD Tests**: Cover all basic operations (Create, Read, Update, Delete).
+- **Advanced Queries**: Pattern matching, counting, and date filtering.
+- **Transactions**: Test atomicity, rollback, and concurrent access.
+- **Multi-Container**: PostgreSQL + Redis for cache testing.
 
-### Exercise 5: Multi-Container (cached_user_repository_test.go)
-- PostgreSQL + Redis setup
-- Cache hit/miss testing
-- Cache invalidation
-- TTL verification
+**Isolation Strategies:**
+- Cleanup after each test (`defer repo.Delete(id)`)
+- Transaction rollback for some tests
+- Optionally, fresh containers per test for full isolation
 
-## Running Tests
+## Key Exercises & Coverage
 
-### All Tests
+### 1. Basic CRUD Operations
+- `TestGetByID`, `TestGetByEmail`, `TestCreate`, `TestUpdate`, `TestDelete`, `TestList`
+
+### 2. Advanced Queries
+- `FindByNamePattern`
+- `CountUsers`
+- `GetRecentUsers`
+
+### 3. Transactional Behavior
+- `BatchCreate`
+- `TransferUserData`
+- `TestTransactionRollback`
+- `TestConcurrentWrites`
+
+### 4. Multi-Container Testing
+- Redis caching: cache hit/miss, invalidation, TTL
+
+## How to Run the Tests
+
+**All Tests:**
 ```bash
 go test ./... -v
 ```
 
-### With Coverage
+**With Coverage:**
 ```bash
 go test -cover ./repository
 go test -coverprofile=coverage.out ./repository
 go tool cover -html=coverage.out
 ```
 
-### Race Detection
+**Race Detection:**
 ```bash
 go test -race ./repository
 ```
 
-### Specific Test
+**Specific Test:**
 ```bash
 go test ./repository -run TestGetByID -v
 ```
 
-### Skip Slow Tests
+**Skip Slow Tests:**
 ```bash
 go test ./repository -short
 ```
 
-## Understanding the Tests
+## Challenges & Solutions
 
-### TestMain Setup
-Each test file has a `TestMain` function that:
-1. Starts Docker container(s)
-2. Waits for services to be ready
-3. Initializes database schema
-4. Runs all tests
-5. Cleans up containers
-
-### Test Isolation
-Tests maintain isolation through:
-- Deferred cleanup (`defer repo.Delete(user.ID)`)
-- Transaction rollback for some tests
-- Shared container with careful data management
-
-### Container Lifecycle
-```
-Test Start → Container Starts → Database Initializes → Tests Run → Container Stops
-```
+| Challenge                                  | Solution/Approach                                      |
+|---------------------------------------------|--------------------------------------------------------|
+| Docker container startup delays             | Used Alpine images, increased wait timeouts            |
+| Test data isolation                         | Cleanup in tests, transaction rollbacks                |
+| Port conflicts                             | Used dynamic port mapping via TestContainers           |
+| CI/CD environment differences               | Ensured Docker is available, used portable configs     |
+| Slow image pulls in CI                      | Pre-pulled images, cached Docker layers                |
+| Data persistence between tests              | Truncated tables or used fresh containers as needed    |
 
 
-## Key Learnings
 
-1. **Real Database Testing**: Tests run against actual PostgreSQL, not mocks
-2. **Container Lifecycle**: Automatic setup and teardown
-3. **Test Isolation**: Each test can have clean state
-4. **CI/CD Ready**: Works in any environment with Docker
-5. **Production-Like**: Same database as production
 
-## Next Steps
-
-- Apply TestContainers to your own projects
-- Try other databases (MySQL, MongoDB)
-- Experiment with message queues (Kafka, RabbitMQ)
-- Add API layer and test end-to-end
-- Explore performance optimization
-
-## Resources
-
-- [TestContainers Go Docs](https://golang.testcontainers.org/)
-- [PostgreSQL Module](https://golang.testcontainers.org/modules/postgres/)
-- [Redis Module](https://golang.testcontainers.org/modules/redis/)
-- Main Tutorial: `../practical5.md`
+## Conclusion
+In summary, this setup shows how effective integration testing can be when TestContainers are used to recreate a production like environment. Each test remains isolated, preventing interference and ensuring reliable, repeatable results. Running PostgreSQL alongside Redis also adds realism by allowing caching and data consistency to be tested across multiple services. The environment works smoothly both locally and in CI/CD pipelines, making it practical for real development workflows. Overall, by using TestMain for structured setup and cleanup, clearing temporary data, and relying on transactions for isolation, the project maintains a clean and dependable testing process from start to finish.
