@@ -37,44 +37,7 @@ awslocal --version
 trivy --version
 ```
 
-## Project Structure
-```
-practical_06/
-├── docker-compose.yml
-├── Makefile
-├── trivy.yaml
-├── scripts/
-│   ├── setup.sh
-│   ├── deploy.sh
-│   ├── status.sh
-│   ├── cleanup.sh
-│   ├── scan.sh
-│   └── compare-security.sh
-├── nextjs-app/
-│   ├── app/
-│   ├── next.config.js
-│   └── package.json
-├── terraform/
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── s3.tf
-│   ├── iam.tf
-│   └── outputs.tf
-└── terraform-insecure/
-    ├── s3-insecure.tf
-    ├── iam-insecure.tf
-    └── README.md
-```
-
 ## Quick Start
-
-### Automated Deployment
-```sh
-make init         # Install dependencies
-make deploy       # Deploy infrastructure and app
-make status       # Check deployment status
-curl $(cd terraform && terraform output -raw deployment_website_endpoint)  # View website
-```
 
 ### Manual Steps
 ```sh
@@ -84,6 +47,23 @@ cd terraform && tflocal init && tflocal apply && cd ..
 awslocal s3 sync nextjs-app/out/ s3://$(cd terraform && terraform output -raw deployment_bucket_name)/ --delete
 ./scripts/status.sh
 ```
+
+## Screenshots
+**1. Deployed Website Homepage** 
+![Deployed Website Homepage](assets/homepage.png)
+*This screenshot displays the homepage of the deployed Next.js static website, confirming that the deployment to the S3 bucket was successful and the site is accessible via the configured endpoint.*
+
+**2. Trivy Scan Results (Secure Configuration)**
+![Trivy Scan Results Secure](assets/trivy.png)
+*This screenshot shows the results of running Trivy on the secure Terraform configuration. It highlights that there are no critical or high vulnerabilities detected, indicating best security practices are in place.*
+
+**3. Trivy Scan Results (Insecure Configuration)**  
+![Trivy Scan Results Insecure](assets/insecure.png)
+*This screenshot presents the Trivy scan output for the intentionally insecure Terraform configuration. It reveals multiple critical and high vulnerabilities, such as lack of encryption and overly permissive IAM policies, which should be addressed.*
+
+**4. Terraform Apply and Security Comparison** 
+![Terraform Apply and Security Comparison](assets/comparing.png)   
+*This screenshot shows the output of a successful `terraform apply` and a comparison of security scan results between secure and insecure configurations using Trivy. It demonstrates that the secure configuration has no critical or high vulnerabilities, while the insecure configuration does.*
 
 ## Terraform Configuration Highlights
 - **Provider**: Configured for LocalStack endpoints and test credentials.
@@ -166,6 +146,4 @@ LocalStack enables rapid, cost-effective local testing of AWS infrastructure, al
 - Security should be integrated from the start.
 - Automated scanning catches issues early.
 - LocalStack enables local development without cloud costs.
-- Terraform provides a consistent way to manage cloud resources.
-
-
+- Terraform provides a consistent way to manage
