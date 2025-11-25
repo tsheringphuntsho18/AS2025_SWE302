@@ -1,10 +1,18 @@
-# Dog Image Browser - GUI Testing with Cypress
+# Dog Image Browser - GUI Testing Solution (Reference Implementation)
 
-This is a [Next.js](https://nextjs.org) application for **Practical 8: GUI Testing with Cypress**. It demonstrates comprehensive end-to-end testing of a web application using Cypress.
+This is the **complete reference solution** for **Practical 8: GUI Testing with Cypress**. Students should use the `gui-testing` folder for their walkthrough and refer to this solution only when stuck or for verification.
 
-## About This Application
+## About This Solution
 
-The Dog Image Browser is a simple web application that:
+This folder contains the completed version of the practical with:
+- ✅ Full Cypress configuration
+- ✅ Comprehensive test suite with 8 test files (31 tests total)
+- ✅ Custom commands for reusable test code
+- ✅ Page Object pattern implementation
+- ✅ Test fixtures for consistent data
+- ✅ Complete user journey tests
+
+The Dog Image Browser application:
 - Fetches random dog images from the Dog CEO API
 - Allows users to filter by breed
 - Displays dog images in a responsive UI
@@ -75,18 +83,22 @@ pnpm cypress:run
 
 ```
 cypress/
-├── e2e/                      # Test files
-│   ├── homepage.cy.ts        # Homepage display tests
-│   ├── fetch-dog.cy.ts       # Dog fetching functionality tests
-│   ├── api-mocking.cy.ts     # API mocking and error handling tests
-│   └── user-journey.cy.ts    # Complete user workflow tests
-├── fixtures/                 # Test data files
-│   └── dog-responses.json    # Mock API responses
-└── support/                  # Custom commands and configuration
-    ├── commands.ts           # Custom Cypress commands
-    ├── e2e.ts               # Global configuration
-    └── page-objects/        # Page Object Models
-        └── DogBrowserPage.ts
+├── e2e/                          # Test files (31 tests total)
+│   ├── homepage.cy.ts            # Homepage display tests (5 tests)
+│   ├── fetch-dog.cy.ts           # Fetch & breed selection tests (7 tests)
+│   ├── api-mocking.cy.ts         # API mocking tests (6 tests)
+│   ├── api-validation.cy.ts      # API validation tests (3 tests)
+│   ├── custom-commands.cy.ts     # Custom commands demo (3 tests)
+│   ├── fixtures.cy.ts            # Fixtures demo (2 tests)
+│   ├── page-objects.cy.ts        # Page Objects demo (4 tests)
+│   └── user-journey.cy.ts        # End-to-end journey (1 comprehensive test)
+├── fixtures/                     # Test data files
+│   └── dog-responses.json        # Mock API responses
+└── support/                      # Custom commands and configuration
+    ├── commands.ts               # 4 Custom Cypress commands
+    ├── e2e.ts                   # Global configuration
+    └── page-objects/            # Page Object Models
+        └── DogBrowserPage.ts    # Complete Page Object implementation
 ```
 
 ### Available npm Scripts
@@ -189,6 +201,36 @@ lsof -ti:3000 | xargs kill -9
 # Or use a different port
 PORT=3001 pnpm dev
 ```
+
+## Differences from Starter Code
+
+The `gui-testing-solution` folder has these additional items compared to `gui-testing`:
+
+### Added Files:
+- `cypress.config.ts` - Cypress configuration
+- `cypress/tsconfig.json` - TypeScript support
+- `cypress/support/e2e.ts` - Global test setup
+- `cypress/support/commands.ts` - Custom commands
+- `cypress/support/page-objects/DogBrowserPage.ts` - Page Object
+- `cypress/fixtures/dog-responses.json` - Test fixtures
+- All 8 test files in `cypress/e2e/`
+
+### Modified Files:
+- `package.json` - Added Cypress scripts and dependencies
+
+### Dependencies Added:
+- `cypress` (v15.5.0)
+- `start-server-and-test` (v2.1.2)
+
+## For Students
+
+If you're working through Practical 8:
+
+1. **Start with the walkthrough**: Use `practicals/practical8-example/gui-testing/` folder
+2. **Follow practical8.md**: Complete guide is in `practicals/practical8.md`
+3. **Reference this solution**: Use this folder when you get stuck
+4. **Don't copy blindly**: Understand each test and why it works
+5. **Experiment**: Modify tests to learn how Cypress works
 
 ## License
 
