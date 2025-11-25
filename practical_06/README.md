@@ -94,46 +94,6 @@ make scan-insecure
 make compare-security
 ```
 
-## Exercises
-
-### 1. Modify the Next.js Application
-- Edit `nextjs-app/app/page.tsx`
-- Redeploy: `make dev`
-- Verify: `curl $(cd terraform && terraform output -raw deployment_website_endpoint)`
-
-### 2. Fix a Security Issue
-- Choose a finding from Trivy scan in `terraform-insecure/`
-- Apply the recommended fix
-- Re-scan: `./scripts/scan.sh insecure`
-
-### 3. Add a New S3 Bucket
-- Add a `backups` bucket in `terraform/s3.tf`
-- Add encryption
-- `tflocal plan` and `tflocal apply`
-- Verify: `awslocal s3 ls | grep backups`
-
-### 4. Implement Versioning
-- Add versioning to deployment bucket in `terraform/s3.tf`
-- Apply and verify:  
-  `awslocal s3api get-bucket-versioning --bucket practical6-deployment-dev`
-
-### 5. Monitor Website Access
-- Access website, then check logs in logs bucket:
-  `awslocal s3 ls s3://practical6-logs-dev/deployment-logs/`
-
-
-## Troubleshooting
-- **Website not accessible**: Check S3 files, bucket policy, website config, and index.html.
-- **Terraform apply fails**: Ensure LocalStack is running, check logs, destroy and re-apply.
-- **Build fails**: Clean and reinstall dependencies in `nextjs-app`.
-
-## Clean Up
-```sh
-make clean
-# or
-./scripts/cleanup.sh
-```
-
 ## Reflection
 **Why is it important to scan IaC for security issues?**  
 Scanning IaC ensures that infrastructure is provisioned securely, preventing misconfigurations that could lead to data breaches or service disruptions.
