@@ -1,395 +1,171 @@
 # Practical_06 Report: Infrastructure as Code with Terraform and LocalStack
 
-This example demonstrates deploying a Next.js application to LocalStack AWS using Terraform for infrastructure management and S3 for static website hosting.
+## Overview
+This practical demonstrates how to define, deploy, and secure cloud infrastructure using Infrastructure as Code (IaC). The exercise covers provisioning AWS S3 buckets locally via LocalStack using Terraform, deploying a Next.js static website, and scanning infrastructure code for security vulnerabilities with Trivy.
 
-## Architecture
+## Learning Outcomes
+- Use Terraform to define and provision infrastructure on LocalStack AWS.
+- Deploy a Next.js static website to AWS S3 using IaC.
+- Use Trivy to scan Infrastructure as Code for security vulnerabilities.
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         LocalStack                           │
-│                                                               │
-│  Developer Machine               S3 Buckets                  │
-│  ┌──────────────┐                                            │
-│  │              │       ┌────────────────┐                   │
-│  │  Next.js     │──────>│  Deployment    │                   │
-│  │  Build       │ sync  │  Bucket        │                   │
-│  │  (local)     │       │  (Website)     │                   │
-│  │              │       └────────────────┘                   │
-│  └──────────────┘                │                           │
-│                                   │                           │
-│                           ┌───────┴────────┐                 │
-│                           │                │                 │
-│                    ┌──────▼──────┐  ┌──────▼──────┐          │
-│                    │   Public    │  │    Logs     │          │
-│                    │   Website   │  │   Bucket    │          │
-│                    └─────────────┘  └─────────────┘          │
-│                                                               │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Components
-
-### Infrastructure (Terraform)
-- **S3 Deployment Bucket**: Hosts the static website with public read access
-- **S3 Logs Bucket**: Stores access logs for the deployment bucket
-- **Bucket Policies**: Configured for public website access
-- **Server-Side Encryption**: AES256 encryption enabled on all buckets
-
-### Application
-- **Next.js 14**: Modern React framework configured for static export
-- **Static Site**: Built locally and deployed to S3 via AWS CLI
-
-### Workflow
-1. **Local Build**: Next.js app is built on your machine
-2. **Terraform Deploy**: Infrastructure is provisioned in LocalStack
-3. **S3 Sync**: Static files are synced to the deployment bucket
-4. **Website Access**: Site is accessible via S3 website endpoint
+## Technologies Used
+- **Terraform**: Infrastructure as Code tool for defining cloud resources.
+- **LocalStack**: Local AWS cloud emulator.
+- **AWS S3**: Object storage and static website hosting.
+- **Next.js**: React framework for static site generation.
+- **Trivy**: Security scanner for IaC and containers.
 
 ## Prerequisites
+- Docker & Docker Compose
+- Terraform (>= 1.0)
+- terraform-local (`tflocal`)
+- Node.js (>= 18)
+- AWS CLI & `awslocal`
+- Trivy
+- Visual Studio Code (recommended)
 
-### Required Software
-
-1. **Docker and Docker Compose**
-   - **macOS**: [Docker Desktop for Mac](https://docs.docker.com/desktop/install/mac-install/)
-   - **Windows**: [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
-   - **Linux**: [Docker Engine](https://docs.docker.com/engine/install/) + [Docker Compose](https://docs.docker.com/compose/install/)
-
-2. **Terraform** (>= 1.0)
-   - **macOS**: `brew install terraform`
-   - **Windows**: `choco install terraform` or download from [terraform.io](https://www.terraform.io/downloads)
-   - **Linux**: Use official HashiCorp repository or download binary
-
-3. **terraform-local (tflocal)** - Wrapper for Terraform with LocalStack
-   - **All platforms**: `pip install terraform-local`
-   - **What it does**: Automatically configures Terraform to use LocalStack endpoints
-   - **Usage**: Use `tflocal` instead of `terraform` commands
-
-4. **Node.js** (>= 18)
-   - **macOS**: `brew install node`
-   - **Windows**: Download from [nodejs.org](https://nodejs.org/) or `choco install nodejs`
-   - **Linux**: Use NodeSource repository or package manager
-
-5. **AWS CLI** with `awslocal` wrapper
-   - **All platforms**: `pip install awscli awscli-local`
-
-6. **Trivy** (Security Scanner)
-   - **macOS**: `brew install trivy`
-   - **Windows**: `choco install trivy` or download from [GitHub](https://github.com/aquasecurity/trivy/releases)
-   - **Linux**: Use official Trivy repository or download binary
-
-7. **Make** (optional, for convenience commands)
-   - **macOS**: Pre-installed
-   - **Windows**: `choco install make` or use Git Bash
-   - **Linux**: `sudo apt-get install build-essential` (Debian/Ubuntu)
-
-## Quick Start
-
-### Option 1: Using Make (Recommended)
-
-```bash
-# Initialize dependencies
-make init
-
-# Deploy everything (infrastructure + application)
-make deploy
-
-# Check status
-make status
-
-# View website
-make website
-# or manually:
-curl $(cd terraform && terraform output -raw deployment_website_endpoint)
-```
-
-### Option 2: Using Scripts
-
-```bash
-# 1. Install Next.js dependencies
-cd nextjs-app
-npm ci
-cd ..
-
-# 2. Deploy infrastructure and application
-./scripts/deploy.sh
-
-# 3. Check deployment status
-./scripts/status.sh
-
-# 4. Clean up when done
-./scripts/cleanup.sh
-```
-
-## Step-by-Step Walkthrough
-
-### 1. Start LocalStack
-
-```bash
-./scripts/setup.sh
-# or
-make setup
-```
-
-This starts LocalStack with the required AWS services:
-- S3
-- IAM
-- CloudWatch Logs
-- STS
-
-### 2. Build Next.js Application
-
-```bash
-cd nextjs-app
-npm ci
-npm run build
-```
-
-The build creates a static export in the `out/` directory.
-
-### 3. Deploy Infrastructure
-
-```bash
-cd terraform
-tflocal init
-tflocal plan
-tflocal apply
-```
-
-This creates:
-- 2 S3 buckets (deployment, logs)
-- Bucket policies for public access
-- Website configuration
-- Server-side encryption
-
-### 4. Deploy Application to S3
-
-```bash
-# Get bucket name from Terraform outputs
-DEPLOYMENT_BUCKET=$(cd terraform && terraform output -raw deployment_bucket_name)
-
-# Sync files to S3
-awslocal s3 sync nextjs-app/out/ s3://$DEPLOYMENT_BUCKET/ --delete
-```
-
-### 5. Access Website
-
-```bash
-# Get website endpoint
-WEBSITE=$(cd terraform && terraform output -raw deployment_website_endpoint)
-
-# Open in browser or curl
-curl $WEBSITE
-open $WEBSITE  # macOS
+Verify installation with:
+```sh
+docker --version
+docker-compose --version
+terraform --version
+tflocal --version
+node --version
+npm --version
+aws --version
+awslocal --version
+trivy --version
 ```
 
 ## Project Structure
-
 ```
-practical6-example/
-├── docker-compose.yml          
-├── Makefile                    
-├── README.md                   
-│
-├── init-scripts/
-│   └── 01-setup.sh            
-│
+practical_06/
+├── docker-compose.yml
+├── Makefile
+├── trivy.yaml
 ├── scripts/
-│   ├── deploy.sh              
-│   ├── status.sh              
-│   ├── cleanup.sh             
-│   ├── scan.sh                
-│   └── compare-security.sh    
-│
+│   ├── setup.sh
+│   ├── deploy.sh
+│   ├── status.sh
+│   ├── cleanup.sh
+│   ├── scan.sh
+│   └── compare-security.sh
 ├── nextjs-app/
-│   ├── app/                   
-│   ├── next.config.js         
+│   ├── app/
+│   ├── next.config.js
 │   └── package.json
-│
 ├── terraform/
-│   ├── main.tf                
-│   ├── variables.tf           
-│   ├── s3.tf                  
-│   ├── iam.tf                 
-│   └── outputs.tf             
-│
-└── terraform-insecure/        
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── s3.tf
+│   ├── iam.tf
+│   └── outputs.tf
+└── terraform-insecure/
     ├── s3-insecure.tf
     ├── iam-insecure.tf
     └── README.md
 ```
 
-## Terraform Outputs
+## Quick Start
 
-After applying Terraform, you'll see these useful outputs:
-
-```
-deployment_bucket_name       - Name of the deployment S3 bucket
-logs_bucket_name             - Name of the logs S3 bucket
-deployment_website_endpoint  - Website URL
-deploy_command               - Command to deploy application
-list_files_command           - Command to list deployed files
+### Automated Deployment
+```sh
+make init         # Install dependencies
+make deploy       # Deploy infrastructure and app
+make status       # Check deployment status
+curl $(cd terraform && terraform output -raw deployment_website_endpoint)  # View website
 ```
 
-## Development Workflow
-
-For quick iterations after infrastructure is deployed:
-
-```bash
-# Make changes to Next.js app
-cd nextjs-app
-# Edit files...
-
-# Quick redeploy (builds and syncs to S3)
-make dev
-
-# Check status
-make status
+### Manual Steps
+```sh
+./scripts/setup.sh
+cd nextjs-app && npm ci && npm run build && cd ..
+cd terraform && tflocal init && tflocal apply && cd ..
+awslocal s3 sync nextjs-app/out/ s3://$(cd terraform && terraform output -raw deployment_bucket_name)/ --delete
+./scripts/status.sh
 ```
 
-## Troubleshooting
+## Terraform Configuration Highlights
+- **Provider**: Configured for LocalStack endpoints and test credentials.
+- **S3 Deployment Bucket**: Website hosting, public read, server-side encryption (AES256).
+- **S3 Logs Bucket**: Stores access logs, encrypted.
+- **Bucket Policies**: Explicit public read for website, logging enabled.
 
-### LocalStack not responding
-```bash
-# Check container status
-docker-compose ps
+## Security Scanning with Trivy
 
-# View logs
-docker-compose logs -f
-
-# Restart LocalStack
-docker-compose restart
-```
-
-### Website not accessible
-```bash
-# Check if files were deployed
-awslocal s3 ls s3://practical6-deployment-dev --recursive
-
-# Verify bucket website configuration
-awslocal s3api get-bucket-website --bucket practical6-deployment-dev
-
-# Check bucket policy
-awslocal s3api get-bucket-policy --bucket practical6-deployment-dev
-```
-
-### Terraform errors
-```bash
-# Verify LocalStack is running
-curl http://localhost:4566/_localstack/health
-
-# Check Terraform state
-cd terraform
-terraform show
-
-# Refresh state
-terraform refresh
-```
-
-## Security Features
-
-The Terraform configuration includes several security best practices:
-
-1. **Encryption**: All S3 buckets use server-side encryption (AES256)
-2. **Access Logging**: Deployment bucket access is logged to a separate logs bucket
-3. **Least Privilege**: Resources have minimal required permissions
-4. **Public Access Control**: Explicit configuration for public website access
-
-### Security Scanning with Trivy
-
-This practical includes infrastructure security scanning using Trivy.
-
-#### Scan Secure Configuration
-
-```bash
-# Scan the secure Terraform configuration
+### Scan Secure Configuration
+```sh
 ./scripts/scan.sh terraform
-
-# Or using make
+# or
 make scan
 ```
 
-#### Scan Insecure Configuration
-
-The `terraform-insecure/` directory contains intentionally vulnerable code for learning:
-
-```bash
-# Scan the insecure configuration
+### Scan Insecure Configuration
+```sh
 ./scripts/scan.sh insecure
-
-# Compare secure vs insecure
-./scripts/compare-security.sh
+# or
+make scan-insecure
 ```
 
-#### Understanding Scan Results
+### Compare Results
+```sh
+./scripts/compare-security.sh
+# or
+make compare-security
+```
 
-Trivy reports findings by severity:
+## Exercises
 
-- **CRITICAL**: Immediate action required (e.g., wildcard IAM permissions)
-- **HIGH**: Should be fixed soon (e.g., unencrypted S3 buckets)
-- **MEDIUM**: Should be addressed (e.g., missing access logs)
-- **LOW**: Nice to have (e.g., missing tags)
+### 1. Modify the Next.js Application
+- Edit `nextjs-app/app/page.tsx`
+- Redeploy: `make dev`
+- Verify: `curl $(cd terraform && terraform output -raw deployment_website_endpoint)`
 
-#### Learning Exercise
+### 2. Fix a Security Issue
+- Choose a finding from Trivy scan in `terraform-insecure/`
+- Apply the recommended fix
+- Re-scan: `./scripts/scan.sh insecure`
 
-1. Run `./scripts/scan.sh all` to scan both configurations
-2. Run `./scripts/compare-security.sh` to see the difference
-3. Review findings in the `reports/` directory
-4. Try fixing issues in `terraform-insecure/` and re-scan
-5. Read `terraform-insecure/README.md` for detailed explanations
+### 3. Add a New S3 Bucket
+- Add a `backups` bucket in `terraform/s3.tf`
+- Add encryption
+- `tflocal plan` and `tflocal apply`
+- Verify: `awslocal s3 ls | grep backups`
 
-## Cleanup
+### 4. Implement Versioning
+- Add versioning to deployment bucket in `terraform/s3.tf`
+- Apply and verify:  
+  `awslocal s3api get-bucket-versioning --bucket practical6-deployment-dev`
 
-### Quick cleanup (keeps data)
-```bash
+### 5. Monitor Website Access
+- Access website, then check logs in logs bucket:
+  `awslocal s3 ls s3://practical6-logs-dev/deployment-logs/`
+
+
+## Troubleshooting
+- **Website not accessible**: Check S3 files, bucket policy, website config, and index.html.
+- **Terraform apply fails**: Ensure LocalStack is running, check logs, destroy and re-apply.
+- **Build fails**: Clean and reinstall dependencies in `nextjs-app`.
+
+## Clean Up
+```sh
 make clean
 # or
 ./scripts/cleanup.sh
 ```
 
-### Full cleanup (removes all data)
-```bash
-./scripts/cleanup.sh
-# Answer 'y' to both prompts to remove LocalStack data and Terraform state
-```
+## Reflection
+**Why is it important to scan IaC for security issues?**  
+Scanning IaC ensures that infrastructure is provisioned securely, preventing misconfigurations that could lead to data breaches or service disruptions.
 
-## Learning Objectives
+**How does LocalStack help in the development workflow?**  
+LocalStack enables rapid, cost-effective local testing of AWS infrastructure, allowing developers to validate changes before deploying to real cloud environments.
 
-This practical teaches:
+## Key Takeaways
+- IaC makes infrastructure reproducible and version-controlled.
+- Security should be integrated from the start.
+- Automated scanning catches issues early.
+- LocalStack enables local development without cloud costs.
+- Terraform provides a consistent way to manage cloud resources.
 
-1. **Infrastructure as Code**: Define cloud infrastructure using Terraform
-2. **LocalStack Development**: Test AWS services locally without cloud costs
-3. **Static Site Deployment**: Deploy Next.js applications to S3
-4. **Security Scanning**: Use Trivy to identify IaC vulnerabilities
-5. **AWS Services**: Hands-on experience with S3, IAM basics, CloudWatch Logs
-6. **DevOps Workflow**: Build locally, deploy to cloud infrastructure
 
-## Why This Approach?
-
-This practical uses a **simplified architecture** that:
-- ✅ Works with free-tier LocalStack (no Pro license required)
-- ✅ Teaches core IaC concepts with Terraform
-- ✅ Demonstrates S3 static website hosting
-- ✅ Includes security scanning with Trivy
-- ✅ Provides a foundation for more complex CI/CD pipelines
-
-In production, you might extend this with:
-- GitHub Actions or GitLab CI for automated builds
-- AWS CloudFront for CDN and HTTPS
-- AWS Lambda for dynamic functionality
-- AWS CodePipeline for full CI/CD (requires AWS Pro or real AWS)
-
-## Next Steps
-
-- Modify the Next.js application and redeploy
-- Add environment-specific configurations (dev, staging, prod)
-- Experiment with different Terraform configurations
-- Add CloudWatch alarms for monitoring
-- Implement blue/green deployments with multiple S3 buckets
-
-## Resources
-
-- [Terraform Documentation](https://www.terraform.io/docs)
-- [LocalStack Documentation](https://docs.localstack.cloud)
-- [AWS S3 Static Website Hosting](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteHosting.html)
-- [Next.js Static Exports](https://nextjs.org/docs/app/building-your-application/deploying/static-exports)
-- [Trivy Documentation](https://trivy.dev/)
